@@ -1,16 +1,9 @@
-"""
-This script runs the FlaskWebProject2 application using a development server.
-"""
-import os
-from os import environ
-from FlaskWebProject2 import app
+# -*- coding: utf-8 -*-
 
 import base64
 import os
 import os.path
 import urllib
-import sys
-
 import hmac
 import json
 import hashlib
@@ -18,6 +11,7 @@ from base64 import urlsafe_b64decode, urlsafe_b64encode
 
 import requests
 from flask import Flask, request, redirect, render_template, url_for
+
 
 #this validation is for integrate with the heroku in python version 2.7
 python_version = sys.version_info.major
@@ -237,4 +231,3 @@ if __name__ == '__main__':
         #app.run(host='127.0.0.1', port=port) 
     else:
         print ('Cannot start application without Facebook App Id and Secret set')
-

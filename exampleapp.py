@@ -7,6 +7,7 @@ import urllib
 import hmac
 import json
 import hashlib
+import sys
 from base64 import urlsafe_b64decode, urlsafe_b64encode
 
 import requests
@@ -27,6 +28,7 @@ requests = requests.session()
 
 app_url = 'https://graph.facebook.com/{0}'.format(FB_APP_ID)
 FB_APP_NAME = json.loads(requests.get(app_url).content.decode("utf-8")).get('name')
+
 FB_APP_SECRET = os.environ.get('FACEBOOK_SECRET')
 
 #if local test.

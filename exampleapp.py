@@ -1,9 +1,16 @@
-# -*- coding: utf-8 -*-
+"""
+This script runs the FlaskWebProject2 application using a development server.
+"""
+import os
+from os import environ
+from FlaskWebProject2 import app
 
 import base64
 import os
 import os.path
 import urllib
+import sys
+
 import hmac
 import json
 import hashlib
@@ -12,12 +19,24 @@ from base64 import urlsafe_b64decode, urlsafe_b64encode
 import requests
 from flask import Flask, request, redirect, render_template, url_for
 
+#this validation is for integrate with the heroku in python version 2.7
+python_version = sys.version_info.major
+if python_version < 3:
+    _url_encode = urllib.urlencode
+else:
+     _url_encode = urllib.parse.urlencode
+
 FB_APP_ID = os.environ.get('FACEBOOK_APP_ID')
+#if local test.
+#FB_APP_ID = "YOUR APP ID"
 requests = requests.session()
 
 app_url = 'https://graph.facebook.com/{0}'.format(FB_APP_ID)
-FB_APP_NAME = json.loads(requests.get(app_url).content).get('name')
+FB_APP_NAME = json.loads(requests.get(app_url).content.decode("utf-8")).get('name')
 FB_APP_SECRET = os.environ.get('FACEBOOK_SECRET')
+
+#if local test.
+#FB_APP_SECRET ='YOUR SECRET'
 
 
 def oauth_login_url(preserve_path=True, next_url=None):
@@ -40,7 +59,7 @@ def base64_url_encode(data):
 
 def fbapi_get_string(path,
     domain=u'graph', params=None, access_token=None,
-    encode_func=urllib.urlencode):
+     encode_func=_url_encode):
     """Make an API call"""
 
     if not params:
@@ -86,7 +105,7 @@ def fbapi_get_application_access_token(id):
 
     token = token.split('=')[-1]
     if not str(id) in token:
-        print 'Token mismatch: %s not in %s' % (id, token)
+        print ('Token mismatch: %s not in %s' % (id, token))
     return token
 
 
@@ -162,9 +181,6 @@ def get_token():
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    # print get_home()
-
-
     access_token = get_token()
     channel_url = url_for('get_channel', _external=True)
     channel_url = channel_url.replace('http:', '').replace('https:', '')
@@ -216,6 +232,9 @@ def close():
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     if app.config.get('FB_APP_ID') and app.config.get('FB_APP_SECRET'):
-        app.run(host='0.0.0.0', port=port)
+        app.run(host='0.0.0.0', port=port) 
+        #if local test.
+        #app.run(host='127.0.0.1', port=port) 
     else:
-        print 'Cannot start application without Facebook App Id and Secret set'
+        print ('Cannot start application without Facebook App Id and Secret set')
+
